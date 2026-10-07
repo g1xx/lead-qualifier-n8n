@@ -1,0 +1,273 @@
+{
+  "name": "Lead qualifier",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cf38736a-d6c8-45c1-b179-69fb0bda59d1",
+      "name": "Webhook",
+      "webhookId": "b342c83a-dc9a-4f29-9c90-0b8078484caf"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Jesteś asystentem działu sprzedaży agencji marketingowej. Oceń zgłoszenie klienta, postępując krok po kroku:\n1. Czy to spam albo oferta sprzedaży skierowana do nas? Jeśli tak → zimny.\n2. Czy zgłoszenie to WYŁĄCZNIE pytanie o cenę, bez żadnej informacji o firmie klienta ani o tym, do czego potrzebuje usługi (np. \"Ile kosztuje strona internetowa?\")? Jeśli tak → zimny. Jeśli klient opisuje swoją firmę lub cel (np. \"reklama dla naszej piekarni\"), to NIE jest ten przypadek — przejdź dalej.\n3. Czy klient opisuje konkretną potrzebę (konkretna usługa lub cel)? Jeśli nie → zimny.\n4. Czy podano budżet ALBO konkretny termin startu? Wystarczy jedno z dwóch. Jeśli tak → gorący. Jeśli nie → ciepły.\n\nZwróć JSON z polami: kategoria (gorący / ciepły / zimny), uzasadnienie (jedno zdanie), firma, potrzeba, budzet. Jeśli czegoś nie podano, wpisz pusty tekst \"\".\n\nFirma: {{ $json.body.company }}\nZgłoszenie: {{ $json.body.message }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        0
+      ],
+      "id": "1d9effd8-2676-40c6-9a63-7ee6db86101b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        208
+      ],
+      "id": "8f8f0d09-2ea1-499e-beb2-7141d2e2c6eb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KouV3zgcg5QspT03",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"kategoria\":\"gorący\",\"uzasadnienie\":\"...\",\"firma\":\"...\",\"potrzeba\":\"...\",\"budzet\":\"5000 zł/mies.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        208
+      ],
+      "id": "04d16aff-58fd-4d1d-802f-39af700026d7",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1kyHo-NO3Cffi5RRXATEIxAa7LBNTubM6DA0soQdmCCw",
+          "mode": "list",
+          "cachedResultName": "Leady",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kyHo-NO3Cffi5RRXATEIxAa7LBNTubM6DA0soQdmCCw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kyHo-NO3Cffi5RRXATEIxAa7LBNTubM6DA0soQdmCCw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+            "imie": "={{ $('Webhook').item.json.body.name }}",
+            "firma": "={{ $('Webhook').item.json.body.company }}",
+            "wiadomosc": "={{ $('Webhook').item.json.body.message }}",
+            "kategoria": "={{ $json.output.kategoria }}",
+            "uzasadnienie": "={{ $json.output.uzasadnienie }}",
+            "budzet": "={{ $json.output.budzet }}",
+            "potrzeba": "={{ $json.output.potrzeba }}",
+            "oczekiwane": "={{ $('Webhook').item.json.body.oczekiwane }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "imie",
+              "displayName": "imie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "firma",
+              "displayName": "firma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "wiadomosc",
+              "displayName": "wiadomosc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kategoria",
+              "displayName": "kategoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "uzasadnienie",
+              "displayName": "uzasadnienie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "potrzeba",
+              "displayName": "potrzeba",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "budzet",
+              "displayName": "budzet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "oczekiwane",
+              "displayName": "oczekiwane",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        0
+      ],
+      "id": "b0d1ee43-3aa7-48af-8687-8397a06b04fb",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "erDV8OqNqIYeSZOQ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Warsaw",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
+  },
+  "versionId": "8c9cce9f-6301-4b3f-973c-927bbb95de84",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f43d56edc2a45c4bbd350f2a82f521f596fd7124d5eb6afd29cfcaa18e4de51"
+  },
+  "nodeGroups": [],
+  "id": "5SWVqrQKwj5aTLZC",
+  "tags": []
+}
