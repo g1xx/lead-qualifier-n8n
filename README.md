@@ -33,6 +33,16 @@ Uwaga: na tym samym zestawie dopracowywałem reguły w prompcie, więc to wynik 
 
 ![Wynik testów](screenshots/tests.png)
 
+### Test na nowych zgłoszeniach (holdout)
+
+Żeby sprawdzić, czy reguły działają poza zestawem, na którym je dopracowywałem, przygotowałem 10 nowych zgłoszeń (m.in. szkoła językowa, kancelaria, kawiarnia pisząca po angielsku, autoserwis piszący po ukraińsku, spam od firmy hostingowej). Prompt przed testem nie był zmieniany.
+
+Skrypt: `check_holdout.ps1`.
+
+**Wynik: 10/10 na nowych zgłoszeniach.** To mały zestaw, więc traktuję go jako potwierdzenie, że reguły nie są dopasowane wyłącznie do danych testowych, a nie jako dokładną miarę trafności.
+
+![Wynik testu holdout](screenshots/holdout.png)
+
 ## Uruchomienie
 
 1. Uruchom n8n w Dockerze:
@@ -51,6 +61,7 @@ Uwaga: na tym samym zestawie dopracowywałem reguły w prompcie, więc to wynik 
 
 - `workflow.json` — eksport workflow z n8n (bez kluczy API)
 - `check_leads.ps1` — zestaw 21 zgłoszeń testowych i automatyczne sprawdzanie trafności
+- `check_holdout.ps1` — 10 nowych zgłoszeń, na których prompt nie był dopracowywany
 - `screenshots/` — schemat, wyniki w arkuszu i wynik testów
 
 ## Technologie
